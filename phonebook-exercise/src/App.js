@@ -11,13 +11,19 @@ const App = () => {
   }
 
   const addName = (event) => {
-    event.preventDefault()
-    const personObject = {
-      name : newName,
-    }
+    const searchResult = persons.find(person => person.name === newName)
 
-    setPersons(persons.concat(personObject))
-    setNewName('')
+    if (searchResult === undefined) {
+      event.preventDefault()
+      const personObject = {
+        name : newName,
+      }
+
+      setPersons(persons.concat(personObject))
+      setNewName('')
+    } else {
+      alert(`${newName} is already added to phonebook`)
+    }
   }
 
   return (
@@ -35,7 +41,7 @@ const App = () => {
           <button type="submit">add</button>
         </div>
       </form>
-      
+
       <h2>Numbers</h2>
       <ul>
         {persons.map(person => <div key={person.name}>{person.name}</div>)}
