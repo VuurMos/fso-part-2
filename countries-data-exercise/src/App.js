@@ -1,9 +1,30 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
+const ExpandedView = ({ filteredCountries }) => {
+  const languages = Object.values(filteredCountries[0].languages)
+
+  return (
+    <div>
+      <h1>{filteredCountries[0].name.common}</h1>
+      <p>capital: {filteredCountries[0].capital}</p>
+      <p>area: {filteredCountries[0].area}</p>
+      <div>
+        <strong>languages: </strong>
+        <ul>
+          {languages.map(language => <div key={language}>{language}</div>)}
+        </ul>
+      </div>
+      <img src={filteredCountries[0].flags.png}></img>
+    </div>
+  )
+}
+
 function App() {
   const [countries, setCountries] = useState([])
   const [searchFilter, setSearchFilter] = useState('')
+  const [filteredCountries, setFilteredCountries] = useState([])
+  const [selectedCountry, setSelectedCountry] = useState({})
 
   useEffect(() => {
     axios
@@ -15,37 +36,22 @@ function App() {
 
   const handleFilter = (event) => {
     setSearchFilter(event.target.value)
+    setFilteredCountries(countries.filter(country => country.name.common.toLowerCase().includes(searchFilter.toLowerCase())))
   }
 
-  const results = countries.filter(country => country.name.common.toLowerCase().includes(searchFilter.toLowerCase()))
-  console.log('results', results)
+  console.log('filteredCountries', filteredCountries)
 
-  if (results.length === 1) {
-    const resultLanguages = results[0].languages
-    const languages = Object.values(resultLanguages)
-    console.log(languages)
-
+  if (filteredCountries.length === 1) {
     return (
       <div className="App">
         <div>
           find countries
           <input onChange={handleFilter} />
         </div>
-        <div>
-          <h1>{results[0].name.common}</h1>
-          <p>capital: {results[0].capital}</p>
-          <p>area: {results[0].area}</p>
-          <div>
-            <strong>languages: </strong>
-            <ul>
-              {languages.map(language => <div key={language}>{language}</div>)}
-            </ul>
-          </div>
-          <img src={results[0].flags.png}></img>
-        </div>
+        <ExpandedView filteredCountries={filteredCountries} />
       </div>
     )
-  } else if (results.length > 10) {
+  } else if (filteredCountries.length > 10) {
     return (
       <div className="App">
         <div>
@@ -65,7 +71,7 @@ function App() {
           <input onChange={handleFilter} />
         </div>
         <ul>
-          {results.map(country => <div key={country.name.official}>{country.name.common}</div>)}
+          {filteredCountries.map(country => <div key={country.name.official}>{country.name.common}</div>)}
         </ul>
       </div>
     )
