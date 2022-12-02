@@ -10,7 +10,9 @@ const CountrySearch = ({ handleFilter }) => {
   )
 }
 
-const Results = ({ filteredCountries }) => {
+const Results = ({ countries, searchFilter, viewCountry }) => {
+  const filteredCountries = countries.filter(country => country.name.common.toLowerCase().includes(searchFilter.toLowerCase()))
+
   if (filteredCountries.length === 1) {
     return (
       <div>
@@ -27,7 +29,7 @@ const Results = ({ filteredCountries }) => {
     return (
       <div>
         <ul>
-          {filteredCountries.map(country => <div key={country.name.official}>{country.name.common}</div>)}
+          {filteredCountries.map(country => <div key={country.name.official}>{country.name.common}<button onClick={() => viewCountry(country.name.common)}>Show</button></div>)}
         </ul>
       </div>
     )
@@ -56,7 +58,6 @@ const ExpandedView = ({ selectedCountry }) => {
 function App() {
   const [countries, setCountries] = useState([])
   const [searchFilter, setSearchFilter] = useState('')
-  const [filteredCountries, setFilteredCountries] = useState([])
 
   useEffect(() => {
     axios
@@ -68,13 +69,16 @@ function App() {
 
   const handleFilter = (event) => {
     setSearchFilter(event.target.value)
-    setFilteredCountries(countries.filter(country => country.name.common.toLowerCase().includes(searchFilter.toLowerCase())))
+  }
+
+  const viewCountry = (countryName) => {
+    setSearchFilter(countryName)
   }
 
   return (
     <div className="App">
       <CountrySearch handleFilter={handleFilter} />
-      <Results filteredCountries={filteredCountries} />
+      <Results countries={countries} searchFilter={searchFilter} viewCountry={viewCountry} />
     </div>
   )
 }
