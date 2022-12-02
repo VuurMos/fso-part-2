@@ -57,7 +57,6 @@ function App() {
   const [countries, setCountries] = useState([])
   const [searchFilter, setSearchFilter] = useState('')
   const [filteredCountries, setFilteredCountries] = useState([])
-  const [selectedCountry, setSelectedCountry] = useState({})
 
   useEffect(() => {
     axios
