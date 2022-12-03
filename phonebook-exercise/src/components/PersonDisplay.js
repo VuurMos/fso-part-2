@@ -1,23 +1,23 @@
-const PersonDisplay = ({ persons, searchFilter }) => {
+const PersonDisplay = ({ persons, searchFilter, deleteEntry }) => {
+    let peopleToDisplay = []
     if (searchFilter === '') {
-        return (
-        <div>
-            <ul>
-            {persons.map(person => <div key={person.id}>{person.name} {person.number}</div>)}
-            </ul>
-        </div>
-        )
+        peopleToDisplay = persons
     } else {
-        const searchResults = persons.filter(person => person.name.toLowerCase().includes(searchFilter.toLowerCase()))
-
-        return (
+        peopleToDisplay = persons.filter(person => person.name.toLowerCase().includes(searchFilter.toLowerCase()))
+    }
+    
+    return (
         <div>
             <ul>
-            {searchResults.map(person => <div key={person.id}>{person.name} {person.number}</div>)}
+                {peopleToDisplay.map(person =>
+                     <div key={person.id}>
+                        {person.name} 
+                        {person.number}
+                        <button onClick={() => deleteEntry(person.id)}>Delete</button>
+                    </div>)}
             </ul>
         </div>
-        )
-    }
+    )
 }
 
 export default PersonDisplay
