@@ -1,62 +1,8 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
-
-const Filter = (props) => {
-  return (
-    <div>
-      filter shown with 
-      <input onChange={props.handleSearchFilter} />
-    </div>
-  )
-}
-
-const PersonForm = (props) => {
-  return (
-    <div>
-      <form onSubmit={props.addName}>
-        <div>
-          name: 
-          <input 
-            value={props.newName} 
-            onChange={props.handleNameChange} 
-          />
-        </div>
-        <div>
-          number:
-          <input
-            value={props.newNumber}
-            onChange={props.handleNumberChange}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-    </div>
-  )
-}
-
-const PersonDisplay = ({ persons, searchFilter }) => {
-  if (searchFilter === '') {
-    return (
-      <div>
-        <ul>
-          {persons.map(person => <div key={person.id}>{person.name} {person.number}</div>)}
-        </ul>
-      </div>
-    )
-  } else {
-    const searchResults = persons.filter(person => person.name.toLowerCase().includes(searchFilter.toLowerCase()))
-
-    return (
-      <div>
-        <ul>
-          {searchResults.map(person => <div key={person.id}>{person.name} {person.number}</div>)}
-        </ul>
-      </div>
-    )
-  }
-}
+import Filter from './components/Filter'
+import PersonDisplay from './components/PersonDisplay'
+import PersonForm from './components/PersonForm'
+import personService from './services/personService'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -64,17 +10,13 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [searchFilter, setSearchFilter] = useState('')
 
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
-  }
-
-  useEffect(hook, [])
+  }, [])
 
   console.log('render', persons.length, 'persons')
 
@@ -100,13 +42,12 @@ const App = () => {
         number : newNumber,
       }
 
-      axios
-        .post('http://localhost:3001/persons', personObject)
-        .then(response => {
-          console.log(response)
-          setPersons(persons.concat(response.data))
+      personService
+        .create(personObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
         })
-      setNewName('')
     } else {
       alert(`${newName} is already added to phonebook`)
     }
