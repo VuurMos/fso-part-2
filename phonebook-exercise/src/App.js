@@ -18,8 +18,6 @@ const App = () => {
       })
   }, [])
 
-  console.log('render', persons.length, 'persons')
-
   const handleSearchFilter = (event) => {
     setSearchFilter(event.target.value)
   }
@@ -33,10 +31,10 @@ const App = () => {
   }
 
   const addName = (event) => {
+    event.preventDefault()
     const existingResult = persons.find(person => person.name === newName)
 
     if (existingResult === undefined) {
-      event.preventDefault()
       const personObject = {
         name : newName,
         number : newNumber,
@@ -49,7 +47,12 @@ const App = () => {
           setNewName('')
         })
     } else {
-      alert(`${newName} is already added to phonebook`)
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const id = existingResult.id
+        const person = persons.find(person => person.id === id)
+        const updatedPerson = { ...person, number: newNumber }
+        updateEntry(id, updatedPerson)
+      }
     }
   }
 
@@ -62,6 +65,14 @@ const App = () => {
           setPersons(persons.filter(person => person.id !== id))
         })
     }
+  }
+
+  const updateEntry = (id, updatedPerson) => {
+    personService
+      .updateNumber(id, updatedPerson)
+      .then(returnedPerson => {
+        setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+      })
   }
 
   return (
