@@ -55,7 +55,9 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
-          updateNotificationMessage(`Added ${newName}`)
+          updateNotificationMessage({
+            notification : `Added ${newName}`
+          })
         })
     } else {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
@@ -63,12 +65,14 @@ const App = () => {
         const person = persons.find(person => person.id === id)
         const updatedPerson = { ...person, number: newNumber }
         updateEntry(id, updatedPerson)
-        updateNotificationMessage(`${newName}'s number has been updated`)
+        updateNotificationMessage({
+          notification : `${newName}'s number has been updated`
+        })
       }
     }
   }
 
-  const deleteEntry = (id) => {
+  const deleteEntry = (id, name) => {
     console.log(`deleting person: ${id}`)
     if (window.confirm(`Do you really want to delete person ${id}?`)) {
       personService
@@ -76,6 +80,12 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.filter(person => person.id !== id))
         })
+        .catch(error => {
+          updateNotificationMessage({
+            error : `Information of ${name} has already been removed from server`
+          })
+        }
+        )
     }
   }
 
@@ -90,7 +100,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notificationMessage} />
+      <Notification 
+        message={notificationMessage === null?  null : Object.values(notificationMessage)[0]} 
+        className={notificationMessage === null?  null : Object.keys(notificationMessage)[0]}
+      />
       <Filter handleSearchFilter={handleSearchFilter} />
 
       <h2>add a new</h2>

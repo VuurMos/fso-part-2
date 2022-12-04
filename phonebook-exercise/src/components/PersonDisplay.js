@@ -13,7 +13,7 @@ const PersonDisplay = ({ persons, searchFilter, deleteEntry }) => {
                      <div key={person.id}>
                         {person.name} 
                         {person.number}
-                        <button onClick={() => deleteEntry(person.id)}>Delete</button>
+                        <button onClick={() => deleteEntry(person.id, person.name)}>Delete</button>
                     </div>)}
             </ul>
         </div>
